@@ -23,9 +23,11 @@ New users may wish to do the following setup to access the server via a GUI and 
 	$ git config --global pull.rebase false
 	```
 1. Clone the fork of the repo. Change <yourgithubid> to your github id (in this case it is CSCE-685-FA25)
-$ git clone --recurse-submodules https://github.com/CSCE-685-FA25/cvw
-$ cd cvw
-$ git remote add upstream https://github.com/openhwgroup/cvw
+	```
+	$ git clone --recurse-submodules https://github.com/CSCE-685-FA25/cvw
+	$ cd cvw
+	$ git remote add upstream https://github.com/openhwgroup/cvw
+	```
 
 2. Run the setup script to update your `PATH` and activate the python virtual environment.
 
