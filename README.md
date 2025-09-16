@@ -22,14 +22,18 @@ New users may wish to do the following setup to access the server via a GUI and 
 	$ git config --global user.email "ben_bitdiddle@wally.edu"
 	$ git config --global pull.rebase false
 	```
+1. Clone the fork of the repo. Change <yourgithubid> to your github id (in this case it is CSCE-685-FA25)
+$ git clone --recurse-submodules https://github.com/CSCE-685-FA25/cvw
+$ cd cvw
+$ git remote add upstream https://github.com/openhwgroup/cvw
 
-7. Run the setup script to update your `PATH` and activate the python virtual environment.
+2. Run the setup script to update your `PATH` and activate the python virtual environment.
 
 	```bash
 	$ source ./setup.sh
 	```
 
-8. Add the following lines to your `.bashrc` or `.bash_profile` to run the setup script each time you log in.
+3. Add the following lines to your `.bashrc` or `.bash_profile` to run the setup script each time you log in.
 
 	```bash
 	if [ -f ~/cvw/setup.sh ]; then
@@ -37,7 +41,7 @@ New users may wish to do the following setup to access the server via a GUI and 
 	fi
 	```
 
-9. Try compiling the HelloWally program and simulating it on the SystemVerilog with Verilator and on the Spike simulator.
+4. Try compiling the HelloWally program and simulating it on the SystemVerilog with Verilator and on the Spike simulator.
 	```
 	$ cd examples/C/hello
 	$ make
@@ -49,7 +53,7 @@ New users may wish to do the following setup to access the server via a GUI and 
 	0 1 2 3 4 5 6 7 8 9 
 	```
 
-10. Build the tests from the cvw directory and run a regression simulation to prove everything is installed.  Building tests may take a while.
+5. Build the tests from the cvw directory and run a regression simulation to prove everything is installed.  Building tests may take a while.
 
 	```bash
 	$ cd ~/cvw && make --jobs
