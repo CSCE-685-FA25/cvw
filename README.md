@@ -22,36 +22,20 @@ New users may wish to do the following setup to access the server via a GUI and 
 	$ git config --global user.email "ben_bitdiddle@wally.edu"
 	$ git config --global pull.rebase false
 	```
-- Optional: Download and install x2go - B.1.1
-- Optional: Download and install VSCode - B.4.2
-- Optional: Make sure you can log into your server via x2go and via a terminal
-	- Terminal on Mac, cmd on Windows, xterm on Linux
-	- See B.1 about ssh -Y login from a terminal
-
-Then fork and clone the repo, source setup, make the tests and run regression
-
-1. If you don't already have a Github account, create one
-2. In a web browser, visit https://github.com/openhwgroup/cvw
-3. In the upper right part of the screen, click on Fork
-4. Create a fork, choosing the owner as your github account and the repository as cvw.
-5. On the Linux computer where you will be working, log in.
-6. Clone your fork of the repo. Change `<yourgithubid>` to your github id.
-	```bash
-	$ git clone --recurse-submodules https://github.com/<yourgithubid>/cvw
+1. Clone the fork of the repo. Change <yourgithubid> to your github id (in this case it is CSCE-685-FA25)
+	```
+	$ git clone --recurse-submodules https://github.com/CSCE-685-FA25/cvw
 	$ cd cvw
 	$ git remote add upstream https://github.com/openhwgroup/cvw
 	```
 
-> [!NOTE]
-> If you are installing on a new system without any tools installed, please jump to the next section, [Toolchain Installation](#toolchain-installation-and-configuration-sys-admin), then come back here.
-
-7. Run the setup script to update your `PATH` and activate the python virtual environment.
+2. Run the setup script to update your `PATH` and activate the python virtual environment.
 
 	```bash
 	$ source ./setup.sh
 	```
 
-8. Add the following lines to your `.bashrc` or `.bash_profile` to run the setup script each time you log in.
+3. Add the following lines to your `.bashrc` or `.bash_profile` to run the setup script each time you log in.
 
 	```bash
 	if [ -f ~/cvw/setup.sh ]; then
@@ -59,7 +43,7 @@ Then fork and clone the repo, source setup, make the tests and run regression
 	fi
 	```
 
-9. Try compiling the HelloWally program and simulating it on the SystemVerilog with Verilator and on the Spike simulator.
+4. Try compiling the HelloWally program and simulating it on the SystemVerilog with Verilator and on the Spike simulator.
 	```
 	$ cd examples/C/hello
 	$ make
@@ -71,26 +55,23 @@ Then fork and clone the repo, source setup, make the tests and run regression
 	0 1 2 3 4 5 6 7 8 9 
 	```
 
-10. Build the tests from the cvw directory and run a regression simulation to prove everything is installed.  Building tests may take a while.
+5. Build the tests from the cvw directory and run a regression simulation to prove everything is installed.  Building tests may take a while.
 
 	```bash
 	$ cd ~/cvw && make --jobs
 	$ regression-wally
 	```
 
-# Toolchain Installation and Configuration (Sys Admin)
+# Toolchain 
 
 > This section describes the open source toolchain installation.
-
-### Compatibility
-The current version of the toolchain has been tested on Ubuntu (versions 20.04 LTS, 22.04 LTS, and 24.04 LTS), Debian (versions 11, 12, and 13), Red Hat/Rocky/AlmaLinux (versions 8, 9, and 10), and SUSE version 15.6. Only the latest minor release of each major version is tested.
 
 > [!WARNING]
 > - Ubuntu 22.04LTS is incompatible with Synopsys Design Compiler.
 > - Verilator currently fails to simulate correctly on Ubuntu 20.04 LTS and Red Hat/Rocky/AlmaLinux 8.
 
 ### Overview
-The toolchain installation script installs the following tools:
+The toolchain includes following tools:
 - [RISC-V GNU Toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain): GCC and accompanying compiler tools
 - [elf2hex](https://github.com/sifive/elf2hex): executable file to hexadecimal converter
 - [QEMU](https://www.qemu.org/docs/master/system/target-riscv.html): emulator
@@ -99,8 +80,6 @@ The toolchain installation script installs the following tools:
 - [RISC-V Sail Model](https://github.com/riscv/sail-riscv): golden reference model for RISC-V
 - [OSU Skywater 130 cell library](https://foss-eda-tools.googlesource.com/skywater-pdk/libs/sky130_osu_sc_t12): standard cell library
 - [RISCOF](https://github.com/riscv-software-src/riscof.git): RISC-V compliance test framework
-
-Additionally, Buildroot Linux is built for Wally and linux test-vectors are generated for simulation. See the [Linux README](linux/README.md) for more details. This can be skipped using the `--no-buildroot` flag.
 
 ### Installation
 
@@ -210,18 +189,6 @@ If you want to implement your own version of the chip, your tool and license com
 
 Startups can expect to spend more than $1 million on CAD tools to get a chip to market. Commercial CAD tools are not realistically available to individuals without a university or company connection.
 
-
-# Adding Cron Job for nightly builds
-
-If you want to add a cronjob you can do the following:
-1) Set up the email client `mutt` to send emails through the command line
-2) Enter `crontab -e` into a terminal
-3) add this code to test cloning CVW, making CVW's tests, then running `regression-wally --nightly --buildroot` every day at 21:30 in your local time
-```bash
-30 21 * * * curl -L https://raw.githubusercontent.com/openhwgroup/cvw/refs/heads/main/bin/nightly_build.py | python - --path {PATH_FOR_NIGHTLY_RUNS} --target all --tests all --send_email harris@hmc.edu,rose@rosethompson.net
-```
-This utility will take up approximately 100 GB on your hard drive. You can also run the script directly from `bin/nightly_build.py`.
-
 # Example wsim commands
 
 wsim runs one of multiple simulators, Questa, VCS, or Verilator using a specific configuration and either a suite of tests or a specific elf file.
@@ -265,6 +232,9 @@ Run basic test with Verilator
 wsim rv32i arch32i --sim verilator
 ```
 
+Run basic test with VCS
+[TODO] give example of VCS
+
 Run lockstep against ImperasDV with a single elf file in the gui. Lockstep requires single elf.
 
 ```bash
@@ -282,3 +252,14 @@ Run Linux boot simulation in lock step between Wally and ImperasDV
 ```bash
 wsim buildroot buildroot --args +INSTR_LIMIT=600000000 --lockstep
 ```
+
+# Adding Cron Job for nightly builds
+
+If you want to add a cronjob you can do the following:
+1) Set up the email client `mutt` to send emails through the command line
+2) Enter `crontab -e` into a terminal
+3) add this code to test cloning CVW, making CVW's tests, then running `regression-wally --nightly --buildroot` every day at 21:30 in your local time
+```bash
+30 21 * * * curl -L https://raw.githubusercontent.com/openhwgroup/cvw/refs/heads/main/bin/nightly_build.py | python - --path {PATH_FOR_NIGHTLY_RUNS} --target all --tests all --send_email harris@hmc.edu,rose@rosethompson.net
+```
+This utility will take up approximately 100 GB on your hard drive. You can also run the script directly from `bin/nightly_build.py`.
