@@ -1,0 +1,17 @@
+BootStrap: docker
+From: wallysoc/ubuntu_wally
+
+%environment
+    export RISCV=/opt/riscv
+    export PATH="$PATH:${RISCV}/bin"
+    export MANPATH="$MANPATH:${RISCV}/share/man"
+
+%post
+    apt-get update && apt-get install -y git make gcc g++ && rm -rf /var/lib/apt/lists/*
+    cd /opt/riscv && git clone https://github.com/riscv/riscv-gnu-toolchain && \
+    cd riscv-gnu-toolchain && \
+    ./configure --prefix=${RISCV} --enable-multilib && \
+    make && make install && cd .. && rm -rf riscv-gnu-toolchain
+
+%runscript
+    exec "$@"

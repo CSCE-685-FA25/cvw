@@ -10,7 +10,7 @@
 # License servers and commercial CAD tool paths
 # Must edit these based on your local environment.  Ask your sysadmin.
 setenv MGLS_LICENSE_FILE 27002@zircon.eng.hmc.edu                         # Change this to your Siemens license server
-setenv SNPSLMD_LICENSE_FILE 27020@zircon.eng.hmc.edu                      # Change this to your Synopsys license server
+setenv SNPSLMD_LICENSE_FILE 27070@coe-vtls3.engr.tamu.edu                 # Change this to your Synopsys license server
 setenv QUESTAPATH /cad/mentor/QUESTA/bin                                  # Change this for your path to Questa
 setenv DCPATH /cad/synopsys/SYN/bin                                       # Change this for your path to Design Compiler
 setenv VCSPATH /cad/synopsys/VCS/bin                                      # Change this for your path to Synopsys VCS

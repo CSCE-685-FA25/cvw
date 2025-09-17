@@ -1,0 +1,97 @@
+# Singularity Definition File for Wally Toolchain
+
+BootStrap: docker
+From: debian
+
+%help
+    This Singularity container provides the Wally toolchain environment for RISC-V development.
+
+%post
+    # Update and install required packages
+    apt update && \
+    apt install -y git gawk make texinfo bison flex build-essential python3 libz-dev libexpat-dev autoconf device-tree-compiler ninja-build libpixman-1-dev build-essential ncurses-base ncurses-bin libncurses5-dev dialog curl wget ftp libgmp-dev python3-pip pkg-config libglib2.0-dev opam build-essential z3 pkg-config zlib1g-dev verilator cpio bc vim emacs gedit nano && \
+    apt-get clean
+
+    # Install Python packages
+    pip3 install chardet==3.0.4 urllib3==1.22 testresources riscof --ignore-installed PyYAML
+
+    # Set root password
+    echo "root:wally" | chpasswd
+
+    # Create RISCV directory
+    mkdir -p /opt/riscv
+
+    # Create user and group
+    groupadd --gid 1000 cad && \
+    useradd --uid 1000 --gid 1000 -m cad && \
+    apt-get install -y sudo && \
+    echo cad ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/cad && \
+    chmod 0440 /etc/sudoers.d/cad
+
+    # Change ownership of /opt/riscv
+    chown -Rf cad:cad /opt/riscv
+
+    # Clone and build RISC-V GNU toolchain
+    cd /opt/riscv && \
+    git clone https://github.com/riscv/riscv-gnu-toolchain && \
+    cd riscv-gnu-toolchain && \
+    ./configure --prefix=/opt/riscv --enable-multilib --with-multilib-generator="rv32e-ilp32e--;rv32i-ilp32--;rv32im-ilp32--;rv32iac-ilp32--;rv32imac-ilp32--;rv32imafc-ilp32f--;rv32imafdc-ilp32d--;rv64i-lp64--;rv64ic-lp64--;rv64iac-lp64--;rv64imac-lp64--;rv64imafdc-lp64d--;rv64im-lp64--;" && \
+    make --jobs && \
+    make install
+
+    # Clone and build elf2hex
+    cd /opt/riscv && \
+    git clone https://github.com/sifive/elf2hex.git && \
+    cd elf2hex && \
+    autoreconf -i && \
+    ./configure --target=riscv64-unknown-elf --prefix=/opt/riscv && \
+    make && \
+    make install
+
+    # Clone and build QEMU
+    cd /opt/riscv && \
+    git clone --recurse-submodules https://github.com/qemu/qemu && \
+    cd qemu && \
+    ./configure --target-list=riscv64-softmmu --prefix=/opt/riscv && \
+    make --jobs && \
+    make install
+
+    # Clone and build Spike
+    cd /opt/riscv && \
+    git clone https://github.com/riscv-software-src/riscv-isa-sim && \
+    mkdir riscv-isa-sim/build && \
+    cd riscv-isa-sim/build && \
+    ../configure --prefix=/opt/riscv --enable-commitlog && \
+    make --jobs && \
+    make install
+
+    # Install SAIL
+    opam init -y --disable-sandboxing && \
+    opam switch create ocaml-base-compiler.4.06.1 && \
+    opam install sail -y && \
+    eval $(opam config env) && \
+    cd /opt/riscv && \
+    git clone https://github.com/riscv/sail-riscv.git && \
+    cd sail-riscv && \
+    make && \
+    ARCH=RV32 make && \
+    ARCH=RV64 make && \
+    ln -s /opt/riscv/sail-riscv/c_emulator/riscv_sim_RV64 /opt/riscv/bin/riscv_sim_RV64 && \
+    ln -s /opt/riscv/sail-riscv/c_emulator/riscv_sim_RV32 /opt/riscv/bin/riscv_sim_RV32
+
+    # Clone and build Buildroot
+    cd /opt/riscv && \
+    git clone --recurse-submodules https://github.com/openhwgroup/cvw.git && \
+    git clone https://github.com/buildroot/buildroot.git && \
+    cd buildroot && \
+    git checkout 2021.05 && \
+    cp -r /opt/riscv/cvw/linux/buildroot-config-src/wally ./board && \
+    cp ./board/wally/main.config .config && \
+    make --jobs
+
+%environment
+    export RISCV=/opt/riscv
+    export PATH=$PATH:$RISCV/bin
+
+%runscript
+    exec "$@"

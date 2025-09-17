@@ -1,0 +1,14 @@
+BootStrap: docker
+From: wallysoc/toolchains_wally
+
+%environment
+    export QUESTA=/cad/mentor/questa_sim-xxxx.x_x
+    export RUN_QUESTA=false
+    export USER=cad
+
+%post
+    mkdir -p /home/${USER}/cvw
+    chown -R ${USER}:${USER} /home/${USER}/cvw
+
+%runscript
+    exec /bin/sh -c "/home/${USER}/run_regression.sh"

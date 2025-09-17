@@ -1,0 +1,15 @@
+BootStrap: docker
+From: ubuntu:22.04
+
+%post
+    apt-get update && apt-get install -y \
+        git gawk make texinfo bison flex build-essential python3 libz-dev libexpat-dev autoconf device-tree-compiler ninja-build libpixman-1-dev build-essential ncurses-base ncurses-bin libncurses5-dev dialog curl wget ftp libgmp-dev python3-pip pkg-config libglib2.0-dev opam z3 zlib1g-dev automake autotools-dev libmpc-dev libmpfr-dev gperf libtool patchutils verilator cpio bc vim emacs gedit nano && \
+    apt-get clean
+    pip3 install --no-cache-dir sphinx sphinx_rtd_theme matplotlib scipy scikit-learn adjustText lief
+    ln -s /usr/bin/python3 /usr/bin/python
+
+%environment
+    export USER=cad
+
+%runscript
+    exec /bin/bash
