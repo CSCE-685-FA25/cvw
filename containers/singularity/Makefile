@@ -2,24 +2,40 @@
 CVW_GIT?="https://github.com/CSCE-685-FA25/cvw"
 CVW_MOUNT?=$(pwd)/../../
 USERNAME=cad
-QUESTA_HOME?=/opt/coe/mentorgraphics/modelsim-2021.3/modeltech
-VCS_HOME?=/opt/coe/synopsys/vcs/W-2024.09-SP2-4
+QUESTA_HOME?=/opt/coe/mentorgraphics/modelsim-2021.3
+VCS_HOME?=/opt/coe/synopsys/vcs
 
 # commandline: Opens an interactive shell inside the Singularity container with mounted directories.
 commandline:
-	singularity exec \
-	--bind ${CVW_MOUNT}:/home/cad/cvw \
-	--bind $(QUESTA_HOME):/cad/mentor/questa_sim-xxxx.x_x \
-	--bind ${VCS_HOME}:/cad/synopsys/VCS \
-	apptainers/toolchains_wally_latest.sif /bin/bash
+	@if [ -d "$(QUESTA_HOME)" ] && [ -d "$(VCS_HOME)" ]; then \
+		singularity exec \
+		--bind ${CVW_MOUNT}:/home/cad/cvw \
+		--bind $(QUESTA_HOME):/cad/mentor/questa_sim-xxxx.x_x \
+		--bind ${VCS_HOME}:/cad/synopsys/VCS \
+		apptainers/toolchains_wally_latest.sif /bin/bash; \
+	else \
+		echo "Launching without Questa or VCS support..."; \
+		echo "[Warning] Consider 'load-research'"; \
+		singularity exec \
+		--bind ${CVW_MOUNT}:/home/cad/cvw \
+		apptainers/toolchains_wally_latest.sif /bin/bash; \
+	fi
 
 # regression_openhw_cvw: Runs regression tests inside the Singularity container with mounted directories.
 regression_openhw_cvw:
-	singularity exec \
-    --bind ${CVW_MOUNT}:/home/cad/cvw \
-	--bind $(QUESTA_HOME):/cad/mentor/questa_sim-xxxx.x_x \
-	--bind ${VCS_HOME}:/cad/synopsys/VCS \
-	apptainers/toolchains_wally_latest.sif 
+	@if [ -d "$(QUESTA_HOME)" ] && [ -d "$(VCS_HOME)" ]; then \
+		singularity exec \
+		--bind ${CVW_MOUNT}:/home/cad/cvw \
+		--bind $(QUESTA_HOME):/cad/mentor/questa_sim-xxxx.x_x \
+		--bind ${VCS_HOME}:/cad/synopsys/VCS \
+		apptainers/regression_wally_latest.sif; \
+	else
+		echo "Launching without Questa or VCS support..."; \
+		echo "[Warning] Consider 'load-research'"; \
+		singularity exec \
+		--bind ${CVW_MOUNT}:/home/cad/cvw \
+		apptainers/regression_wally_latest.sif; \
+	fi
 
 # push_hub: Placeholder for pushing Singularity images to a registry.
 push_hub:

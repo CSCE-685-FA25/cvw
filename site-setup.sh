@@ -18,10 +18,10 @@ ENDC='\033[0m' # Reset to default color
 export MGLS_LICENSE_FILE=27002@zircon.eng.hmc.edu                   # Change this to your Siemens license server for Questa
 export SNPSLMD_LICENSE_FILE=27070@coe-vtls3.engr.tamu.edu           # Change this to your Synopsys license server
 export IMPERASD_LICENSE_FILE=27020@zircon.eng.hmc.edu               # Change this to your Imperas license server
-export BREKER_LICENSE_FILE=1819@zircon.eng.hmc.edu                  # Change this to your Breker license server
-export QUESTA_HOME=/cad/mentor/questa_sim-xxxx.x_x                  # Change this for your path to Questa, excluding bin
+export BREKER_LICENSE_FILE=1819@zircon.eng.hmc.edu                  # Change this to your Breker license serve
+export QUESTA_HOME=/cad/mentor/questa_sim-xxxx.x_x/modeltech        # Change this for your path to Questa, excluding bin
 export DC_HOME=/cad/synopsys/SYN                                    # Change this for your path to Synopsys DC, excluding bin
-export VCS_HOME=/cad/synopsys/VCS                                   # Change this for your path to Synopsys VCS, excluding bin
+export VCS_HOME=/cad/synopsys/VCS/W-2024.09-SP2-4                   # Change this for your path to Synopsys VCS, excluding bin
 export BREKER_HOME=/cad/breker/TREK                                 # Change this for your path to Breker Trek
 export SPYGLASS_HOME=/cad/synopsys/SPYGLASS_HOME                    # Change this for your path to Synopsys Spyglass
 
