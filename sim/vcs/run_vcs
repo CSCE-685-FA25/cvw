@@ -23,7 +23,8 @@ logdir = f"{simdir}/logs"
 def runFindCommand(cmd):
     res = subprocess.check_output(cmd, shell=True)
     res = str(res)
-    res = res.replace("\\n", " ")  # replace newline with space
+    res = "\t \t" + res
+    res = res.replace("\\n", "\n \t \t")  # replace newline with space
     res = res.replace("'", "")  # strip off quotation marks
     res = res[1:] # strip off leading b from byte string
     return res
@@ -56,7 +57,7 @@ def generateFileList(testbench):
     rtlsrc_files = runFindCommand(rtlsrc_cmd)
     tbcommon_cmd = f'find {tbdir}/common -name "*.sv"'
     tbcommon_files = runFindCommand(tbcommon_cmd)
-    tb_file = f"{tbdir}/{testbench}.sv"
+    tb_file = f"{tbdir}/{testbench}.sv\n"
     return f"{tb_file} {rtlsrc_files} {tbcommon_files}"
 
 def processArgs(wkdir, args):
@@ -96,13 +97,42 @@ def setupParamOverrides(wkdir, args):
             [param, value] = param.split("=")
             value = value.replace("\\'", "'") if "\\'" in value else f'"{value}"' # transform quotes/bit indicators
             f.write(f"assign {value} {args.tb}/{param}\n")
-    return f" -parameters {wkdir}/param_overrides.txt "
+    return f"-parameters {wkdir}/param_overrides.txt "
 
 def setupCommands(wkdir, rtlFiles, compileOptions, simvOptions, args):
-    includePath = f"+incdir+{cfgdir}/{args.config} +incdir+{cfgdir}/deriv/{args.config} +incdir+{cfgdir}/shared +incdir+$WALLY/tests +incdir+{tbdir} +incdir+{srcdir}"
-    vcsStandardFlags = "+lint=all,noGCWM,noUI,noSVA-UA,noIDTS,noNS,noULCO,noCAWM-L,noWMIA-L,noSV-PIU,noSTASKW_CO,noSTASKW_CO1,noSTASKW_RMCOF -suppress +warn -sverilog +vc -Mupdate -line -full64 -lca -ntb_opts sensitive_dyn"
-    vcsCMD = f"vcs {vcsStandardFlags} -top {args.tb} {compileOptions} -Mdir={wkdir} {includePath} {srcdir}/cvw.sv {rtlFiles} -o {wkdir}/sim_out -work {wkdir} -Mlib={wkdir} -l {logdir}/{args.config}_{args.testsuite}.log"
-    simvCMD = f"{wkdir}/sim_out +TEST={args.testsuite} {args.args} -no_save {simvOptions}"
+    includePath = f"+incdir+{cfgdir}/{args.config}\n \
+                    +incdir+{cfgdir}/deriv/{args.config}\n \
+                    +incdir+{cfgdir}/shared\n \
+                    +incdir+$WALLY/tests\n \
+                    +incdir+{tbdir}\n \
+                    +incdir+{srcdir}\n"
+    vcsStandardFlags = f"+lint=all,noGCWM,noUI,noSVA-UA,noIDTS,noNS,noULCO,noCAWM-L,noWMIA-L,noSV-PIU,noSTASKW_CO,noSTASKW_CO1,noSTASKW_RMCOF\n \
+                         -suppress\n \
+                         +warn\n \
+                         -sverilog\n \
+                         +vc\n \
+                         -Mupdate\n \
+                         -line\n \
+                         -full64\n \
+                         -lca\n \
+                         -ntb_opts\n \
+                         sensitive_dyn\n" 
+    vcsCMD = f"vcs {vcsStandardFlags} \n \
+               -top {args.tb} \n \
+               {compileOptions} \n \
+               -Mdir={wkdir} \n \
+               {includePath} \n \
+               {srcdir}/cvw.sv \n \
+               {rtlFiles} \n \
+               -o {wkdir}/sim_out \n \
+               -work {wkdir} \n \
+               -Mlib={wkdir} \n \
+               -l {logdir}/{args.config}_{args.testsuite}.log \n"
+    simvCMD = f"{wkdir}/sim_out\n \
+                +TEST={args.testsuite}\n \
+                {args.args}\n \
+                -no_save\n \
+                {simvOptions}\n"
     return vcsCMD, simvCMD
 
 def runVCS(vcsCMD, simvCMD):

@@ -12,6 +12,7 @@ commandline:
 		--bind ${CVW_MOUNT}:/home/cad/cvw \
 		--bind $(QUESTA_HOME):/cad/mentor/questa_sim-xxxx.x_x \
 		--bind ${VCS_HOME}:/cad/synopsys/VCS \
+		--env RUN_QUESTA=1 \
 		apptainers/toolchains_wally_latest.sif /bin/bash; \
 	else \
 		echo "Launching without Questa or VCS support..."; \
